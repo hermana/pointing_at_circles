@@ -1,11 +1,22 @@
+//import java.awt.Robot;
+
+
 int NUM_CIRCLES = 30;
 int MIN_RADIUS = 50;
 int MAX_RADIUS = 150;
 Circle[] circles = new Circle[NUM_CIRCLES];
+PShape experimentMouse;
+PVector experimentVector;
+//Robot robot = new Robot();
+
 
 void setup() {
   size(1080, 1080);
+  //robot = new Robot();
+  experimentVector = new PVector(mouseX, mouseY);
+  experimentMouse = loadShape("./imgs/icons8-mouse.svg");
   generateCircles();
+  noCursor();
 }
 
 void draw() {
@@ -13,6 +24,10 @@ void draw() {
   for(int i=0; i<NUM_CIRCLES;i++){
     circles[i].display();
   }
+  shape(experimentMouse, mouseX, mouseY);
+  experimentVector.x = mouseX;
+  experimentVector.y = mouseY;
+  //robot.mouseMove(width/2, height/2);
 }
 
 void generateCircles() {
