@@ -1,4 +1,5 @@
-//import java.awt.Robot;
+import java.awt.*;
+
 
 
 int NUM_CIRCLES = 30;
@@ -7,12 +8,17 @@ int MAX_RADIUS = 150;
 Circle[] circles = new Circle[NUM_CIRCLES];
 PShape experimentMouse;
 PVector experimentVector;
-//Robot robot = new Robot();
+Robot robot;
 
 
 void setup() {
   size(1080, 1080);
-  //robot = new Robot();
+   try {
+    robot = new Robot();
+  } catch (AWTException e) {
+    e.printStackTrace();
+    exit();
+  }
   experimentVector = new PVector(mouseX, mouseY);
   experimentMouse = loadShape("./imgs/icons8-mouse.svg");
   generateCircles();
