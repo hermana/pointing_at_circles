@@ -6,7 +6,8 @@ int NUM_CIRCLES = 30;
 int MIN_RADIUS = 50;
 int MAX_RADIUS = 150;
 Circle[] circles = new Circle[NUM_CIRCLES];
-PShape experimentMouse;
+//PShape experimentMouse;
+PShape cursor;
 PVector experimentVector;
 Robot robot;
 
@@ -20,7 +21,7 @@ void setup() {
     exit();
   }
   experimentVector = new PVector(mouseX, mouseY);
-  experimentMouse = loadShape("./imgs/icons8-mouse.svg");
+  cursor = createCursor();
   generateCircles();
   noCursor();
 }
@@ -30,11 +31,16 @@ void draw() {
   for(int i=0; i<NUM_CIRCLES;i++){
     circles[i].display();
   }
-  shape(experimentMouse, mouseX, mouseY);
-  experimentVector.x = mouseX;
-  experimentVector.y = mouseY;
-  //robot.mouseMove(width/2, height/2);
+  //shape(experimentMouse, experimentVector.x, experimentVector.y);
+  shape(cursor, mouseX, mouseY);
 }
+
+
+void mouseMoved(){
+  experimentVector.add(pmouseX, pmouseY);
+  //robot.mouseMove(displayWidth/2, displayHeight/2);
+}
+
 
 void generateCircles() {
   int count = 0;
@@ -63,4 +69,25 @@ void generateCircles() {
       count++;
     }
   }
+}
+
+
+
+PShape createCursor() {
+  PShape c = createShape(GROUP);
+  // cursor shape
+  PShape arrow = createShape();
+  arrow.beginShape();
+  arrow.vertex(0, 0);
+  arrow.vertex(0, 40);
+  arrow.vertex(10, 30);
+  arrow.vertex(18, 48); //35, 95
+  arrow.vertex(23, 45); //45, 90
+  arrow.vertex(15, 28); 
+  arrow.vertex(28, 28);
+  arrow.endShape(CLOSE);
+  arrow.setFill(color(255, 204, 0)); // Black color
+
+  c.addChild(arrow);
+  return c;
 }
