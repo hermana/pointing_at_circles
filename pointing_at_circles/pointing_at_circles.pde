@@ -99,6 +99,8 @@ void mouseClicked() {
               //currentCondition = conditions.get(conditionIndex);
               state = State.INSTRUCTIONS;
             }else{
+               float ID = get_fitts();
+               currentCondition.finish_trial(ID);
                currentCondition.update_current_trial();
             }
        }//TODO: handle when the target is not clicked..
@@ -115,6 +117,15 @@ boolean isTargetClicked(){
     }
   }
   return false;
+}
+
+float get_fitts(){
+  for (Circle c : circles){
+    if (c.isTarget()){
+      return c.get_ID(mouseX, mouseY);
+    }
+  }
+  return 0.0;
 }
 
 /////////////////////// SETUP HELPERS ///////////////////////////

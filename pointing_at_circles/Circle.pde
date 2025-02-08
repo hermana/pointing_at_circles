@@ -32,4 +32,10 @@
   boolean isTarget(){
     return target;
   }
+  
+  float get_ID(float clickX, float clickY){
+     //fitt's law
+     float d = dist(this.x, this.y, clickX, clickY);
+     return log((d/this.r)+1) / (float)Math.log(2); // log laws
+   }
 }

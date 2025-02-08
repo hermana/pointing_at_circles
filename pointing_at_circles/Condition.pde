@@ -38,6 +38,10 @@ class Condition {
     //  }
     //  return total_time;
     //}
+    
+    void finish_trial(float ID){
+      trials.get(currentTrial-1).set_ID(ID);
+    }
    
     void update_current_trial(){
       currentTrial+=1;
