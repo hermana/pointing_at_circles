@@ -86,27 +86,27 @@ void mouseClicked() {
       state = State.BEFORE_CONDITION;
       break;
     case BEFORE_CONDITION: 
+      currentCondition.start_trial_timer();
       state = State.TRIAL;
       break;
     case TRIAL: 
         if(isTargetClicked()){
             currentCondition.end_trial_timer();
-            generateCircles();
+            float ID = get_fitts();
+            currentCondition.finish_trial(ID);
+            currentCondition.print_results();
+            generateCircles();          
             if(currentCondition.currentTrial >= currentCondition.numTrials){
-              currentCondition.print_results();
               //TODO: actually increment
               //conditionIndex+=1;
               //currentCondition = conditions.get(conditionIndex);
               state = State.INSTRUCTIONS;
             }else{
-               float ID = get_fitts();
-               currentCondition.finish_trial(ID);
                currentCondition.update_current_trial();
+               currentCondition.start_trial_timer();
             }
        }else{
          currentCondition.mark_trial_unsuccessful();
-         currentCondition.start_trial_timer();
-         generateCircles();
        }
       break;
   }

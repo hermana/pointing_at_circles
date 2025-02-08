@@ -10,12 +10,24 @@ class Trial {
      elapsedTime = millis() - startTime;
    }
    
+   int get_elapsed_time(){
+     return elapsedTime;
+   }
+   
    void mark_unsuccessful(){
      unsuccessful_attempts += 1;
    }
    
+   int get_num_errors(){
+     return unsuccessful_attempts;
+   }
+   
    void set_ID(float ID){
       this.ID = ID;
+   }
+   
+   float get_ID(){
+     return this.ID;
    }
 
 

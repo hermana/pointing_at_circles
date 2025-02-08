@@ -24,7 +24,7 @@ class Condition {
     }
     
     void end_trial_timer(){
-      trials.get(currentTrial-1).endTime = millis();
+      trials.get(currentTrial-1).set_elapsed_time();
     }
     
     void get_trial_elapsed_time(){
@@ -48,7 +48,11 @@ class Condition {
     }
     
     void print_results(){
-      println("TODO");
+      // ConditionName, TrialNumber, FittsID, CompletionTime, Errors
+      String fitts =  nf(trials.get(currentTrial-1).get_ID(), 0, 2);
+      String time = str(trials.get(currentTrial-1).get_elapsed_time());
+      String errors = str(trials.get(currentTrial-1).get_num_errors());
+      println(this.name + " " + str(currentTrial) + " " + fitts + " " + time + " " + errors + "\n");
     }
     
        
