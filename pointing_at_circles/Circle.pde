@@ -23,4 +23,13 @@
   void setAsTarget(){
     this.target=true;
   }
+  
+  boolean isClicked(float X, float Y){
+    float d = dist(this.x, this.y, X, Y);
+    return d <= this.r;
+  }
+  
+  boolean isTarget(){
+    return target;
+  }
 }

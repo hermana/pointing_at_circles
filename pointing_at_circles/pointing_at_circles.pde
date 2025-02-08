@@ -37,7 +37,7 @@ void setup() {
   
   state = State.INSTRUCTIONS;
   conditionIndex = 0;
-  conditions.add(new Condition("Basic Fitt's Law", "Please click on the green circle.", 60)); //String cName, String cInstructions, int cNumTrials
+  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 5)); //String cName, String cInstructions, int cNumTrials
   currentCondition = conditions.get(conditionIndex);
   
   robot.mouseMove(displayWidth/2, displayHeight/2);
@@ -89,12 +89,14 @@ void mouseClicked() {
       state = State.TRIAL;
       break;
     case TRIAL: 
-        if(is_target_clicked()){
+        if(isTargetClicked()){
             currentCondition.end_trial_timer();
+            generateCircles();
             if(currentCondition.currentTrial >= currentCondition.numTrials){
               currentCondition.print_results();
-              conditionIndex+=1;
-              currentCondition = conditions.get(conditionIndex);
+              //TODO: actually increment
+              //conditionIndex+=1;
+              //currentCondition = conditions.get(conditionIndex);
               state = State.INSTRUCTIONS;
             }else{
                currentCondition.update_current_trial();
@@ -106,8 +108,13 @@ void mouseClicked() {
 
 /////////////////////// TRIAL HELPERS ///////////////////////////
 
-boolean is_target_clicked(){
-  return true;
+boolean isTargetClicked(){
+  for (Circle c : circles){
+    if (c.isClicked(float(mouseX), float(mouseY)) && c.isTarget()){
+      return true;
+    }
+  }
+  return false;
 }
 
 /////////////////////// SETUP HELPERS ///////////////////////////
