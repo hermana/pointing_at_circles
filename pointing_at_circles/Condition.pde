@@ -51,6 +51,11 @@ class Condition {
       println("TODO");
     }
     
-  
+       
+    void mark_trial_unsuccessful(){
+      trials.get(currentTrial-1).mark_unsuccessful();
+    
+    }
+    
   }
   

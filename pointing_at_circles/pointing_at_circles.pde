@@ -103,7 +103,11 @@ void mouseClicked() {
                currentCondition.finish_trial(ID);
                currentCondition.update_current_trial();
             }
-       }//TODO: handle when the target is not clicked..
+       }else{
+         currentCondition.mark_trial_unsuccessful();
+         currentCondition.start_trial_timer();
+         generateCircles();
+       }
       break;
   }
 }

@@ -4,26 +4,26 @@ class Trial {
   int endTime;
   int elapsedTime;
   float ID;
-  boolean successful;
+  int unsuccessful_attempts;
    
    void set_elapsed_time(){
      elapsedTime = millis() - startTime;
    }
    
    void mark_unsuccessful(){
-     successful = false;
+     unsuccessful_attempts += 1;
    }
    
    void set_ID(float ID){
       this.ID = ID;
    }
 
- 
+
    Trial(){ 
      startTime = 0;
      endTime = 0;
      elapsedTime = 0;
      ID = 0.0;
-     successful = true; //we'll assume unless marked otherwise
+     unsuccessful_attempts = 0;
    }
 }

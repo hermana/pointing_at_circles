@@ -38,4 +38,5 @@
      float d = dist(this.x, this.y, clickX, clickY);
      return log((d/this.r)+1) / (float)Math.log(2); // log laws
    }
+
 }
