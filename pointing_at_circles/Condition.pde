@@ -8,29 +8,28 @@ class Condition {
     int totalTime;
     int totalSuccessfulTrials;
     int totalErrorTrials;
-    //TODO: Trial class
-    //ArrayList<Trial> trials;
+    ArrayList<Trial> trials;
     
     Condition(String cName, String cInstructions, int cNumTrials){
       name = cName;
       instructions = cInstructions;
       numTrials = cNumTrials;
       currentTrial = 1;
-      //trials = new ArrayList<Trial>(numTrials);
-      //for(int i=0; i<numTrials; i++){ trials.add(new Trial()); }
+      trials = new ArrayList<Trial>(numTrials);
+      for(int i=0; i<numTrials; i++){ trials.add(new Trial()); }
     }
     
-    //void start_trial_timer(){
-    //  trials.get(currentTrial-1).startTime = millis();
-    //}
+    void start_trial_timer(){
+      trials.get(currentTrial-1).startTime = millis();
+    }
     
-    //void end_trial_timer(){
-    //  trials.get(currentTrial-1).endTime = millis();
-    //}
+    void end_trial_timer(){
+      trials.get(currentTrial-1).endTime = millis();
+    }
     
-    //int get_trial_elapsed_time(){
-    //  return trials.get(currentTrial-1).get_trial_elapsed_time();
-    //}
+    void get_trial_elapsed_time(){
+      trials.get(currentTrial-1).set_elapsed_time();
+    }
     
     //int get_total_completion_time(){
     //  int total_time = 0;
@@ -40,6 +39,9 @@ class Condition {
     //  return total_time;
     //}
    
+    void update_current_trial(){
+      currentTrial+=1;
+    }
     
     void print_results(){
       println("TODO");

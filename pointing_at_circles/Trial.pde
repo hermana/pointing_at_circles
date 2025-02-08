@@ -2,20 +2,21 @@ class Trial {
 
   int startTime;
   int endTime;
-  //boolean successful;
-  
-
-   int get_trial_time(){
-     return endTime - startTime;
+  int elapsedTime;
+  boolean successful;
+   
+   void set_elapsed_time(){
+     elapsedTime = millis() - startTime;
    }
    
-   int get_trial_elapsed_time(){
-     return millis() - startTime;
+   void mark_successful(){
+     successful = true;
    }
  
    Trial(){ 
      startTime = 0;
      endTime = 0;
-     //successful = true; //we'll assume unless marked otherwise
+     elapsedTime = 0;
+     successful = false; //we'll assume unless marked otherwise
    }
 }
