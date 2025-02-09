@@ -16,8 +16,10 @@ Circle[] circles = new Circle[NUM_CIRCLES];
 PShape cursor;
 PVector experimentVector;
 Robot robot;
-State state;
+float dx;
+float dy;
 
+State state;
 ArrayList<Condition> conditions = new ArrayList<Condition>();
 ArrayList<PVector> gravityVectors = new ArrayList<PVector>();
 Condition currentCondition;
@@ -25,7 +27,8 @@ int conditionIndex;
 
 
 void setup() {
-  size(1080, 1080);
+  //size(1080, 1080);
+  fullScreen();
    try {
     robot = new Robot();
   } catch (AWTException e) {
@@ -40,17 +43,22 @@ void setup() {
   state = State.INSTRUCTIONS;
   conditionIndex = 0;
   conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 1, ConditionType.REGULAR, 0)); 
-  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 2)); 
-  //conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
-  //conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 5, ConditionType.STICKY, 4)); 
-  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 100, ConditionType.GRAVITY, 2));
+  
+  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 1.1)); 
+  conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 1, ConditionType.STICKY, 1.5));
+  conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 1, ConditionType.STICKY, 2));
+
+  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 10, ConditionType.GRAVITY, 2));
   currentCondition = conditions.get(conditionIndex);
   
-  robot.mouseMove(displayWidth/2, displayHeight/2);
-  experimentVector = new PVector(mouseX, mouseY);
+  //robot.mouseMove(displayWidth/2, displayHeight/2); //<>//
+  experimentVector = new PVector(mouseX, mouseY); //<>//
   cursor = createCursor();
-  generateCircles();
+  dx = 0.0;
+  dy = 0.0; 
   noCursor();
+  
+  generateCircles();
 }
 
 void draw() {
@@ -70,14 +78,13 @@ void draw() {
      for(int i=0; i<NUM_CIRCLES;i++){
         circles[i].display();
      }
-     shape(cursor, experimentVector.x, experimentVector.y);
+     shape(cursor, experimentVector.x, experimentVector.y); //<>//
      if(currentCondition.conditionType == ConditionType.GRAVITY){
        for(PVector v: gravityVectors){
          fill(0);
          line(experimentVector.x, experimentVector.y, experimentVector.x+v.x, experimentVector.y+v.y);
        }
      }
-     //shape(cursor, mouseX, mouseY);
      //robot.mouseMove(displayWidth/2, displayHeight/2);
      break;
    case FINISHED:
@@ -87,41 +94,44 @@ void draw() {
    default:
      break;
   }
-
+  
 }
 
+void keyPressed(){
+  exit();
+}
 
 void mouseMoved(){
-   int dx = mouseX - pmouseX;
-   int dy = mouseY - pmouseY;
-   switch(currentCondition.conditionType){
-     case REGULAR:
-        experimentVector.add(dx, dy); 
-         //robot.mouseMove(displayWidth/2, displayHeight/2);
-         break;
-     case STICKY:
-         float targetIntersection = getTargetIntersection((float)dx, (float)dy);
-         if(targetIntersection > 0){
-           // TODO: Scaling how sticky the target is based on the length of the intersection
-           PVector stickyMove = new PVector(dx, dy);
-           stickyMove = stickyMove.setMag(1/currentCondition.strength);
-           experimentVector.add(stickyMove);
-         }else{
-           experimentVector.add(dx, dy); 
-         }
-         break;
-     case GRAVITY:
-         gravityVectors = createGravityVectors((float)dx, (float)dy); 
-         experimentVector.add(dx, dy); 
-         for(PVector v: gravityVectors){
-           experimentVector.add(v);  
-         }
-         break;
-     default:
-         break;
-   }
-
-  
+  if(state == State.TRIAL){
+     dx = mouseX - pmouseX;
+     dy = mouseY - pmouseY;
+     switch(currentCondition.conditionType){
+       case REGULAR:
+          experimentVector = experimentVector.add(dx, dy); //<>//
+          break;
+       case STICKY:
+           //float targetIntersection = getTargetIntersection((float)dx, (float)dy);
+           float targetIntersection = getTargetIntersection();
+           if(targetIntersection > 0){
+             // TODO: Scaling how sticky the target is based on the length of the intersection
+             PVector stickyMove = new PVector(dx, dy);
+             stickyMove = stickyMove.setMag(1/currentCondition.strength);
+             experimentVector =  experimentVector.add(stickyMove);
+           }else{
+             experimentVector = experimentVector.add(dx, dy); 
+           }
+           break;
+       case GRAVITY: 
+           gravityVectors = createGravityVectors(); 
+           experimentVector =  experimentVector.add(dx, dy); 
+           for(PVector v: gravityVectors){
+             experimentVector = experimentVector.add(v);  
+           }
+           break;
+       default:
+           break;
+     } //<>//
+  }
 }
 
 
@@ -132,6 +142,9 @@ void mouseClicked() {
       break;
     case BEFORE_CONDITION: 
       currentCondition.start_trial_timer();
+      // mouse position used on experiment vector because of fullscreen
+      // robot.mouseMove(displayWidth/2, displayHeight/2);
+      experimentVector.set(mouseX, mouseY);
       state = State.TRIAL;
       break;
     case TRIAL: 
@@ -140,6 +153,10 @@ void mouseClicked() {
             float ID = get_fitts();
             currentCondition.finish_trial(ID);
             currentCondition.print_results();
+            
+            // mouse position used on experiment vector because of fullscreen
+            // robot.mouseMove(displayWidth/2, displayHeight/2);
+            experimentVector.set(mouseX, mouseY);
             generateCircles();          
             if(currentCondition.currentTrial >= currentCondition.numTrials){
               conditionIndex+=1;
@@ -185,7 +202,8 @@ float get_fitts(){
   return 0.0;
 }
 
-float getTargetIntersection(float dx, float dy){
+
+float getTargetIntersection(){
   for (Circle c : circles){
     if (c.isTarget()){
       return c.intersectionLength(experimentVector.x + dx, experimentVector.y + dy, experimentVector.x, experimentVector.y);
@@ -195,7 +213,7 @@ float getTargetIntersection(float dx, float dy){
 }
 
 
-ArrayList<PVector> createGravityVectors(float dx, float dy){
+ArrayList<PVector> createGravityVectors(){
   ArrayList<PVector> vectors = new ArrayList<PVector>();
   for(Circle c: circles){
     float distanceToCircleEdge = dist(experimentVector.x, experimentVector.y, c.x, c.y) - c.r;
