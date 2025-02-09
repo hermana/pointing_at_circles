@@ -41,14 +41,6 @@ class Condition {
       trials.get(currentTrial-1).set_elapsed_time();
     }
     
-    //int get_total_completion_time(){
-    //  int total_time = 0;
-    //  for(int i=0; i<numTrials;i++){
-    //    total_time += trials.get(i).get_trial_time();
-    //  }
-    //  return total_time;
-    //}
-    
     void finish_trial(float ID){
       trials.get(currentTrial-1).set_ID(ID);
     }

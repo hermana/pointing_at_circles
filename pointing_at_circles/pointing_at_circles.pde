@@ -19,6 +19,7 @@ Robot robot;
 State state;
 
 ArrayList<Condition> conditions = new ArrayList<Condition>();
+ArrayList<PVector> gravityVectors = new ArrayList<PVector>();
 Condition currentCondition;
 int conditionIndex;
 
@@ -42,7 +43,7 @@ void setup() {
   conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 2)); 
   //conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
   //conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 5, ConditionType.STICKY, 4)); 
-  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 2, ConditionType.GRAVITY, 2));
+  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 100, ConditionType.GRAVITY, 2));
   currentCondition = conditions.get(conditionIndex);
   
   robot.mouseMove(displayWidth/2, displayHeight/2);
@@ -70,6 +71,12 @@ void draw() {
         circles[i].display();
      }
      shape(cursor, experimentVector.x, experimentVector.y);
+     if(currentCondition.conditionType == ConditionType.GRAVITY){
+       for(PVector v: gravityVectors){
+         fill(0);
+         line(experimentVector.x, experimentVector.y, experimentVector.x+v.x, experimentVector.y+v.y);
+       }
+     }
      //shape(cursor, mouseX, mouseY);
      //robot.mouseMove(displayWidth/2, displayHeight/2);
      break;
@@ -104,7 +111,11 @@ void mouseMoved(){
          }
          break;
      case GRAVITY:
-         ArrayList<PVector> gravityVectors = createGravityVectors(); 
+         gravityVectors = createGravityVectors((float)dx, (float)dy); 
+         experimentVector.add(dx, dy); 
+         for(PVector v: gravityVectors){
+           experimentVector.add(v);  
+         }
          break;
      default:
          break;
@@ -184,12 +195,15 @@ float getTargetIntersection(float dx, float dy){
 }
 
 
-ArrayList<PVector> createGravityVectors(){
+ArrayList<PVector> createGravityVectors(float dx, float dy){
   ArrayList<PVector> vectors = new ArrayList<PVector>();
   for(Circle c: circles){
     float distanceToCircleEdge = dist(experimentVector.x, experimentVector.y, c.x, c.y) - c.r;
     if(distanceToCircleEdge < 200.0){
-      vectors.add(new PVector());
+      // I made this formula up. 
+      float gravityX = currentCondition.strength * (dx / (distanceToCircleEdge));
+      float gravityY = currentCondition.strength * (dy / (distanceToCircleEdge));
+      vectors.add(new PVector(gravityX, gravityY));
     }
   }
   return vectors;
