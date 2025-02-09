@@ -38,8 +38,8 @@ void setup() {
   
   state = State.INSTRUCTIONS;
   conditionIndex = 0;
-  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 5, ConditionType.REGULAR, 0)); 
-  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 5, ConditionType.STICKY, 1.5)); 
+  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 1, ConditionType.REGULAR, 0)); 
+  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
   conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
   conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 5, ConditionType.STICKY, 4)); 
   currentCondition = conditions.get(conditionIndex);
@@ -86,8 +86,29 @@ void draw() {
 void mouseMoved(){
    int dx = mouseX - pmouseX;
    int dy = mouseY - pmouseY;
-   experimentVector.add(dx, dy); 
-   //robot.mouseMove(displayWidth/2, displayHeight/2);
+   switch(currentCondition.conditionType){
+     case REGULAR:
+        experimentVector.add(dx, dy); 
+         //robot.mouseMove(displayWidth/2, displayHeight/2);
+         break;
+     case STICKY:
+         float targetIntersection = getTargetIntersection((float)dx, (float)dy);
+         if(targetIntersection > 0){
+           // TODO: Scaling how sticky the target is based on the length of the intersection
+           PVector stickyMove = new PVector(dx, dy);
+           stickyMove = stickyMove.setMag(1/currentCondition.stickiness);
+           experimentVector.add(stickyMove);
+         }else{
+           experimentVector.add(dx, dy); 
+         }
+         break;
+     case GRAVITY:
+         break;
+     default:
+         break;
+   }
+
+  
 }
 
 
@@ -135,7 +156,7 @@ void mouseClicked() {
 
 boolean isTargetClicked(){
   for (Circle c : circles){
-    if (c.isClicked(float(mouseX), float(mouseY)) && c.isTarget()){
+    if (c.isClicked(experimentVector.x, experimentVector.y) && c.isTarget()){
       return true;
     }
   }
@@ -145,11 +166,21 @@ boolean isTargetClicked(){
 float get_fitts(){
   for (Circle c : circles){
     if (c.isTarget()){
-      return c.get_ID(mouseX, mouseY);
+      return c.get_ID(experimentVector.x, experimentVector.y);
     }
   }
   return 0.0;
 }
+
+float getTargetIntersection(float dx, float dy){
+  for (Circle c : circles){
+    if (c.isTarget()){
+      return c.intersectionLength(experimentVector.x + dx, experimentVector.y + dy, experimentVector.x, experimentVector.y);
+    }
+  }
+  return 0.0; 
+}
+
 
 /////////////////////// SETUP HELPERS ///////////////////////////
 
