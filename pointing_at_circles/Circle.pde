@@ -24,6 +24,10 @@
     this.target=true;
   }
   
+  void setAsNotTarget(){
+    this.target=false;
+  }
+  
   boolean isClicked(float X, float Y){
     float d = dist(this.x, this.y, X, Y);
     return d <= this.r;

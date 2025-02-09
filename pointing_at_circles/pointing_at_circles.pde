@@ -44,15 +44,15 @@ void setup() {
   
   state = State.INSTRUCTIONS;
   conditionIndex = 0;
-  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 1, ConditionType.REGULAR, 0)); 
+  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 2, ConditionType.REGULAR, 0)); 
   
   //conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 0.5)); 
   //conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 1, ConditionType.STICKY, 1));
   //conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 1, ConditionType.STICKY, 2));
 
-  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 1, ConditionType.GRAVITY, 2));
-  conditions.add(new Condition("Target Gravity: Medium", "Please click on the green circle", 1, ConditionType.GRAVITY, 3));
-  conditions.add(new Condition("Target Gravity: High", "Please click on the green circle", 1, ConditionType.GRAVITY, 8));
+  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 2, ConditionType.GRAVITY, 2));
+  conditions.add(new Condition("Target Gravity: Medium", "Please click on the green circle", 2, ConditionType.GRAVITY, 3));
+  //conditions.add(new Condition("Target Gravity: High", "Please click on the green circle", 1, ConditionType.GRAVITY, 8));
   currentCondition = conditions.get(conditionIndex);
   
   //robot.mouseMove(displayWidth/2, displayHeight/2); //<>//
@@ -170,12 +170,13 @@ void mouseClicked() {
             // mouse position used on experiment vector because of fullscreen
             // robot.mouseMove(displayWidth/2, displayHeight/2);
             experimentVector.set(mouseX, mouseY);
-            generateCircles();          
+            resetTarget();        
             if(currentCondition.currentTrial >= currentCondition.numTrials){
               conditionIndex+=1;
               if(conditionIndex < conditions.size()){
                  currentCondition = conditions.get(conditionIndex);
                  state = State.INSTRUCTIONS;
+                 generateCircles();
               }else{
                 state = State.FINISHED;
               }              
@@ -239,6 +240,16 @@ ArrayList<PVector> createGravityVectors(){
     }
   }
   return vectors;
+}
+
+void resetTarget(){
+  int target = int(random(0, NUM_CIRCLES));
+  int c = 0;
+  while(c<NUM_CIRCLES){
+    if(circles[c].isTarget()){ circles[c].setAsNotTarget();}
+    if(c == target){ circles[c].setAsTarget(); }
+    c++;
+  }
 }
 
 /////////////////////// SETUP HELPERS ///////////////////////////
