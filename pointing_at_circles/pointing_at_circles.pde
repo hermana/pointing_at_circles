@@ -4,7 +4,8 @@ import java.awt.*;
 enum State{
   INSTRUCTIONS,
   BEFORE_CONDITION, 
-  TRIAL
+  TRIAL, 
+  FINISHED
 }
 
 
@@ -37,7 +38,10 @@ void setup() {
   
   state = State.INSTRUCTIONS;
   conditionIndex = 0;
-  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 5)); //String cName, String cInstructions, int cNumTrials
+  conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 5, ConditionType.REGULAR, 0)); 
+  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 5, ConditionType.STICKY, 1.5)); 
+  conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
+  conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 5, ConditionType.STICKY, 4)); 
   currentCondition = conditions.get(conditionIndex);
   
   robot.mouseMove(displayWidth/2, displayHeight/2);
@@ -64,10 +68,14 @@ void draw() {
      for(int i=0; i<NUM_CIRCLES;i++){
         circles[i].display();
      }
-     //shape(experimentMouse, experimentVector.x, experimentVector.y);
-     shape(cursor, mouseX, mouseY);
+     shape(cursor, experimentVector.x, experimentVector.y);
+     //shape(cursor, mouseX, mouseY);
      //robot.mouseMove(displayWidth/2, displayHeight/2);
      break;
+   case FINISHED:
+      fill(0);
+      text("The experiment has finished.", width/2, height/2);
+      text("Click to exit.", width/2, (height/2)+50);
    default:
      break;
   }
@@ -76,7 +84,10 @@ void draw() {
 
 
 void mouseMoved(){
-   experimentVector.add(pmouseX, pmouseY);  
+   int dx = mouseX - pmouseX;
+   int dy = mouseY - pmouseY;
+   experimentVector.add(dx, dy); 
+   //robot.mouseMove(displayWidth/2, displayHeight/2);
 }
 
 
@@ -97,10 +108,13 @@ void mouseClicked() {
             currentCondition.print_results();
             generateCircles();          
             if(currentCondition.currentTrial >= currentCondition.numTrials){
-              //TODO: actually increment
-              //conditionIndex+=1;
-              //currentCondition = conditions.get(conditionIndex);
-              state = State.INSTRUCTIONS;
+              conditionIndex+=1;
+              if(conditionIndex < conditions.size()){
+                 currentCondition = conditions.get(conditionIndex);
+                 state = State.INSTRUCTIONS;
+              }else{
+                state = State.FINISHED;
+              }              
             }else{
                currentCondition.update_current_trial();
                currentCondition.start_trial_timer();
@@ -108,6 +122,11 @@ void mouseClicked() {
        }else{
          currentCondition.mark_trial_unsuccessful();
        }
+      break;
+    case FINISHED:
+      exit();
+      break;
+    default:
       break;
   }
 }
