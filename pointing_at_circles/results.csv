@@ -1,0 +1,7 @@
+Condition Name,Trial,ID,Time (ms),Errors,Strength,Condition Type
+Fitt's Law,1,0.35,1421,0,0.0,REGULAR
+Fitt's Law,1,0.35,1421,0,0.0,REGULAR
+Target Gravity: Low,1,0.38,1677,0,2.0,GRAVITY
+Target Gravity: Low,1,0.38,1677,0,2.0,GRAVITY
+Target Gravity: Medium,1,0.90,1539,0,3.0,GRAVITY
+Target Gravity: Medium,1,0.90,1539,0,3.0,GRAVITY

@@ -8,10 +8,11 @@ enum State{
   FINISHED
 }
 
-
 int NUM_CIRCLES = 30;
 int MIN_RADIUS = 50;
 int MAX_RADIUS = 150;
+String RESULTS_FILENAME = "./results.csv";
+
 Circle[] circles = new Circle[NUM_CIRCLES];
 PShape cursor;
 PVector experimentVector;
@@ -25,6 +26,7 @@ ArrayList<PVector> gravityVectors = new ArrayList<PVector>();
 Condition currentCondition;
 int conditionIndex;
 
+Table results;
 
 void setup() {
   //size(1080, 1080);
@@ -44,11 +46,13 @@ void setup() {
   conditionIndex = 0;
   conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 1, ConditionType.REGULAR, 0)); 
   
-  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 1.1)); 
-  conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 1, ConditionType.STICKY, 1.5));
-  conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 1, ConditionType.STICKY, 2));
+  //conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 0.5)); 
+  //conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 1, ConditionType.STICKY, 1));
+  //conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 1, ConditionType.STICKY, 2));
 
-  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 10, ConditionType.GRAVITY, 2));
+  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 1, ConditionType.GRAVITY, 2));
+  conditions.add(new Condition("Target Gravity: Medium", "Please click on the green circle", 1, ConditionType.GRAVITY, 3));
+  conditions.add(new Condition("Target Gravity: High", "Please click on the green circle", 1, ConditionType.GRAVITY, 8));
   currentCondition = conditions.get(conditionIndex);
   
   //robot.mouseMove(displayWidth/2, displayHeight/2); //<>//
@@ -56,7 +60,15 @@ void setup() {
   cursor = createCursor();
   dx = 0.0;
   dy = 0.0; 
-  noCursor();
+ // noCursor();
+  results = new Table();
+  results.addColumn("Condition Name");
+  results.addColumn("Trial");
+  results.addColumn("ID");
+  results.addColumn("Time (ms)");
+  results.addColumn("Errors");
+  results.addColumn("Strength");
+  results.addColumn("Condition Type");
   
   generateCircles();
 }
@@ -98,6 +110,7 @@ void draw() {
 }
 
 void keyPressed(){
+  saveTable(results, RESULTS_FILENAME, "csv");  
   exit();
 }
 
@@ -152,7 +165,7 @@ void mouseClicked() {
             currentCondition.end_trial_timer();
             float ID = get_fitts();
             currentCondition.finish_trial(ID);
-            currentCondition.print_results();
+            currentCondition.print_results(results);
             
             // mouse position used on experiment vector because of fullscreen
             // robot.mouseMove(displayWidth/2, displayHeight/2);
@@ -175,6 +188,7 @@ void mouseClicked() {
        }
       break;
     case FINISHED:
+      saveTable(results, RESULTS_FILENAME, "csv");  
       exit();
       break;
     default:
@@ -217,7 +231,7 @@ ArrayList<PVector> createGravityVectors(){
   ArrayList<PVector> vectors = new ArrayList<PVector>();
   for(Circle c: circles){
     float distanceToCircleEdge = dist(experimentVector.x, experimentVector.y, c.x, c.y) - c.r;
-    if(distanceToCircleEdge < 200.0){
+    if(distanceToCircleEdge < 500.0){
       // I made this formula up. 
       float gravityX = currentCondition.strength * (dx / (distanceToCircleEdge));
       float gravityY = currentCondition.strength * (dy / (distanceToCircleEdge));

@@ -58,13 +58,23 @@ class Condition {
      return "GRAVITY";
     }
     
-    void print_results(){
+    void print_results(Table results){
       // ConditionName, TrialNumber, FittsID, CompletionTime, Errors
       String fitts =  nf(trials.get(currentTrial-1).get_ID(), 0, 2);
       String time = str(trials.get(currentTrial-1).get_elapsed_time());
       String errors = str(trials.get(currentTrial-1).get_num_errors());
       String type = getConditionAsString();
-      println(this.name + " " + str(currentTrial) + " " + fitts + " " + time + " " + errors + " " + this.strength + " " + type + "\n" );
+      println(this.name + " " + str(currentTrial) + " " + fitts + " " + time + " " + errors + " " + str(this.strength) + " " + type + "\n" );
+
+      TableRow newRow = results.addRow();
+      newRow.setString("Condition Name", this.name);
+      newRow.setString("Trial", str(currentTrial));
+      newRow.setString("ID", fitts);
+      newRow.setString("Time (ms)", time);
+      newRow.setString("Errors", errors);
+      newRow.setString("Strength", str(this.strength));
+      newRow.setString("Condition Type", type);
+      results.addRow(newRow);
     }
     
        
