@@ -16,9 +16,9 @@ class Condition {
     int totalErrorTrials;
     ArrayList<Trial> trials;
     ConditionType conditionType;
-    float stickiness;
+    float strength;
     
-    Condition(String cName, String cInstructions, int cNumTrials, ConditionType conditionType, float stickiness){
+    Condition(String cName, String cInstructions, int cNumTrials, ConditionType conditionType, float strength){
       this.name = cName;
       this.instructions = cInstructions;
       this.numTrials = cNumTrials;
@@ -26,7 +26,7 @@ class Condition {
       this.trials = new ArrayList<Trial>(numTrials);
       for(int i=0; i<this.numTrials; i++){ this.trials.add(new Trial()); }
       this.conditionType = conditionType;
-      this.stickiness = this.conditionType == ConditionType.STICKY ? stickiness : 1;
+      this.strength = strength;
     }
     
     void start_trial_timer(){
@@ -57,12 +57,22 @@ class Condition {
       currentTrial+=1;
     }
     
+    String getConditionAsString(){
+     if(this.conditionType == ConditionType.REGULAR){
+       return "REGULAR";
+     }else if(this.conditionType == ConditionType.STICKY){
+       return "STICKY";
+     }
+     return "GRAVITY";
+    }
+    
     void print_results(){
       // ConditionName, TrialNumber, FittsID, CompletionTime, Errors
       String fitts =  nf(trials.get(currentTrial-1).get_ID(), 0, 2);
       String time = str(trials.get(currentTrial-1).get_elapsed_time());
       String errors = str(trials.get(currentTrial-1).get_num_errors());
-      println(this.name + " " + str(currentTrial) + " " + fitts + " " + time + " " + errors + "\n");
+      String type = getConditionAsString();
+      println(this.name + " " + str(currentTrial) + " " + fitts + " " + time + " " + errors + " " + this.strength + " " + type + "\n" );
     }
     
        

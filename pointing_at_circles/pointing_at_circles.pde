@@ -39,9 +39,10 @@ void setup() {
   state = State.INSTRUCTIONS;
   conditionIndex = 0;
   conditions.add(new Condition("Fitt's Law", "Please click on the green circle.", 1, ConditionType.REGULAR, 0)); 
-  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
-  conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
-  conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 5, ConditionType.STICKY, 4)); 
+  conditions.add(new Condition("Sticky Target: Low", "Please click on the green circle.", 1, ConditionType.STICKY, 2)); 
+  //conditions.add(new Condition("Sticky Target: Medium", "Please click on the green circle.", 5, ConditionType.STICKY, 2)); 
+  //conditions.add(new Condition("Sticky Target: High", "Please click on the green circle.", 5, ConditionType.STICKY, 4)); 
+  conditions.add(new Condition("Target Gravity: Low", "Please click on the green circle", 2, ConditionType.GRAVITY, 2));
   currentCondition = conditions.get(conditionIndex);
   
   robot.mouseMove(displayWidth/2, displayHeight/2);
@@ -96,13 +97,14 @@ void mouseMoved(){
          if(targetIntersection > 0){
            // TODO: Scaling how sticky the target is based on the length of the intersection
            PVector stickyMove = new PVector(dx, dy);
-           stickyMove = stickyMove.setMag(1/currentCondition.stickiness);
+           stickyMove = stickyMove.setMag(1/currentCondition.strength);
            experimentVector.add(stickyMove);
          }else{
            experimentVector.add(dx, dy); 
          }
          break;
      case GRAVITY:
+         ArrayList<PVector> gravityVectors = createGravityVectors(); 
          break;
      default:
          break;
@@ -181,6 +183,17 @@ float getTargetIntersection(float dx, float dy){
   return 0.0; 
 }
 
+
+ArrayList<PVector> createGravityVectors(){
+  ArrayList<PVector> vectors = new ArrayList<PVector>();
+  for(Circle c: circles){
+    float distanceToCircleEdge = dist(experimentVector.x, experimentVector.y, c.x, c.y) - c.r;
+    if(distanceToCircleEdge < 200.0){
+      vectors.add(new PVector());
+    }
+  }
+  return vectors;
+}
 
 /////////////////////// SETUP HELPERS ///////////////////////////
 
